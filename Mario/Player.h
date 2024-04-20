@@ -1,17 +1,11 @@
 ﻿#pragma once
 
+#include "StaticObject.h"
 #include "SFML/Graphics.hpp"
 
 struct Player
 {
-    sf::Vector2f playerSize;
-    
-    // Спрайт игрока. Спрайт это часть текстуры с указанием координат в текстуре
-    // Спрайт не принимает участие в расчете игровой логики. Он нужен только для отрисовки
-    sf::Sprite playerSprite;
-    
-    // Создание переменной для хранения размера и положения игрока
-    sf::FloatRect playerRect;
+    StaticObject staticObj;
 
     // Текущее ускорение игрока. Показывает в какую сторону и на сколько быстро двигается игрок
     sf::Vector2f playerVelocity;
@@ -21,7 +15,12 @@ struct Player
 
     // Скорость прыжка игрока аналогично playerSpeed
     float playerJumpSpeed = 450.f;
+
+    // Скорость прыжка игрока когда он убивает врага
+    float playerKillEnemyJumpSpeed = 200.f;
     
     // Переменная которая указывает находится ли игрок на земле. Это нужно для опеределия возможности прыжка
     bool bIsPlayerOnGround = false;
+
+    int score = 0;
 };

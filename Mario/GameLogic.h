@@ -1,12 +1,11 @@
 ﻿#pragma once
 
-#include "Player.h"
-#include "Collisions.h"
+#include "World.h"
 
 void HandleInput(Player& player);
 
 void HandleWindowsEvent(const sf::Event& event, Player& player);
 
-void UpdateGame(Player& player, const Level& level, float gravity, float clockDeltaSeconds, const sf::Vector2f& tileSize);
+void UpdateGame(World& world, float clockDeltaSeconds, const sf::Vector2f& tileSize);
 
-void DrawGame(sf::RenderWindow& window, Level& level, Player& player, const sf::Vector2f& tileSize);
+void DrawGame(sf::RenderWindow& window, World& world, const sf::Vector2f& tileSize);
