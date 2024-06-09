@@ -55,17 +55,48 @@ int main()
     
         world.level = CreateLevel(levelDescriptor, drawScale);
 
-    
-        // Загружаем текстуру в спрайт
-        world.player.staticObj.sprite.setTexture(tileSetTexture);
-        // Указываем какую часть текстуры будет использовать спрайт
-        world.player.staticObj.sprite.setTextureRect(sf::IntRect(117, 507, textureTileSize.x, textureTileSize.y));
-        // Задаём скейл спрайту чтобы его увеличить
-        world.player.staticObj.sprite.setScale(drawScale);
-    
-        // Создание переменной для хранения размера и положения игрока
-        world.player.staticObj.rect = sf::FloatRect(80.f, 450.f, textureTileSize.x * drawScale.x, textureTileSize.y * drawScale.y);
-    
+        {
+            // Загружаем текстуру в спрайт
+            world.player.staticObj.sprite.setTexture(tileSetTexture);
+            // Указываем какую часть текстуры будет использовать спрайт
+            world.player.staticObj.sprite.setTextureRect(sf::IntRect(117, 507, textureTileSize.x, textureTileSize.y));
+            // Задаём скейл спрайту чтобы его увеличить
+            world.player.staticObj.sprite.setScale(drawScale);
+
+            world.player.staticObj.sprite.setOrigin(textureTileSize.x / 2.f, textureTileSize.y / 2.f);
+
+            // Создание переменной для хранения размера и положения игрока
+            world.player.staticObj.rect = sf::FloatRect(80.f, 450.f, textureTileSize.x * drawScale.x, textureTileSize.y * drawScale.y);
+
+            // Анимация бега
+            {
+                world.player.walkAnimation.texture = tileSetTexture;
+                world.player.walkAnimation.speed = 7.f;
+                world.player.walkAnimation.frames.push_back(sf::IntRect(84, 507, textureTileSize.x, textureTileSize.y));
+                world.player.walkAnimation.frames.push_back(sf::IntRect(99, 507, textureTileSize.x, textureTileSize.y));
+                world.player.walkAnimation.frames.push_back(sf::IntRect(117, 507, textureTileSize.x, textureTileSize.y));
+            }
+
+            {
+                world.player.idleAnimation.texture = tileSetTexture;
+                world.player.idleAnimation.speed = 0.f;
+                world.player.idleAnimation.frames.push_back(sf::IntRect(23, 507, textureTileSize.x, textureTileSize.y));
+            }
+
+            {
+                world.player.jumpUpAnimation.texture = tileSetTexture;
+                world.player.jumpUpAnimation.speed = 0.f;
+                world.player.jumpUpAnimation.frames.push_back(sf::IntRect(139, 507, textureTileSize.x, textureTileSize.y));
+            }
+            {
+                world.player.jumpDownAnimation.texture = tileSetTexture;
+                world.player.jumpDownAnimation.speed = 7.f;
+                world.player.jumpDownAnimation.frames.push_back(sf::IntRect(68, 528, textureTileSize.x, textureTileSize.y));
+                world.player.jumpDownAnimation.frames.push_back(sf::IntRect(90, 528, textureTileSize.x, textureTileSize.y));
+                world.player.jumpDownAnimation.frames.push_back(sf::IntRect(113, 528, textureTileSize.x, textureTileSize.y));
+            }
+        }
+        
         {
             Enemy enemy;
             //...

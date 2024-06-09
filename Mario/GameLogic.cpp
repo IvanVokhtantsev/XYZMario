@@ -3,6 +3,8 @@
 
 void HandleInput(Player& player)
 {
+    player.playerVelocity.x = 0.f;
+    
     // Обработка инпута с кнопок
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
@@ -84,10 +86,38 @@ void UpdateGame(World& world, float clockDeltaSeconds, const sf::Vector2f& tileS
                 player.playerVelocity.y = 0.f;
             }
         }
-            
-        player.playerVelocity.x = 0.f;
 
+        if(std::abs(player.playerVelocity.x) > 0.0001f)
+        {
+            player.playerAnimationDirection = player.playerVelocity.x < 0 ? EPlayerDirection::Left : EPlayerDirection::Right;
+        }
+        
+        if(player.bIsPlayerOnGround)
+        {
+            if(std::abs(player.playerVelocity.x) > 0.0001f)
+            {
+                player.currentAnimation = &player.walkAnimation;
+            }
+            else
+            {
+                player.currentAnimation = &player.idleAnimation;
+            }
+        }
+        else
+        {
+            if(player.playerVelocity.y < 0)
+            {
+                player.currentAnimation = &player.jumpDownAnimation;
+            }
+            else
+            {
+                player.currentAnimation = &player.jumpUpAnimation;
+            }
+        }
+        
 
+        player.currentAnimation->Update(clockDeltaSeconds);
+        
         for(Enemy& enemy : world.enemies)
         {
             if(!enemy.bDead)
@@ -170,8 +200,29 @@ void DrawGame(sf::RenderWindow& window, World& world, const sf::Vector2f& tileSi
         }
     }
 
-    // Отрабатываем игрока
-    world.player.staticObj.sprite.setPosition(world.player.staticObj.rect.left, world.player.staticObj.rect.top);
+    {
+        // Отрисовываем игрока
+        
+        Player& player = world.player;
+      
+        // Берём текущий кадр анимации и устанавливаем его на спрайт игрока
+        if(player.currentAnimation != nullptr)
+        {
+            player.staticObj.sprite.setTextureRect(player.currentAnimation->GetCurrentFrame());
+        }
+
+        // Изменяем scale спрайта игрока в зависимости от направления движения
+        // Изменение scale приведет к изменению направления спрайта
+        const int scaleXSign = player.playerAnimationDirection == EPlayerDirection::Left ? -1.f : 1.f;
+        const float scaleX = std::abs(player.staticObj.sprite.getScale().x) * scaleXSign;
+        player.staticObj.sprite.setScale(scaleX, player.staticObj.sprite.getScale().y);
+
+        const float playerDrawLeftPos = player.staticObj.rect.left + world.player.staticObj.rect.width / 2;
+        const float playerDrawTopPos = player.staticObj.rect.top + world.player.staticObj.rect.height / 2;
+        player.staticObj.sprite.setPosition(playerDrawLeftPos, playerDrawTopPos);
+    }
+  
+    
     window.draw(world.player.staticObj.sprite);
 
     // Отрисовка текста с количеством очков
