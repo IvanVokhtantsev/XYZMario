@@ -1,6 +1,8 @@
 ﻿#include "GameLogic.h"
 #include "Collisions.h"
 
+#include <algorithm>
+
 void HandleInput(Player& player)
 {
     player.playerVelocity.x = 0.f;
@@ -38,16 +40,16 @@ void UpdateGame(World& world, float clockDeltaSeconds, const sf::Vector2f& tileS
 
     // Обработка логики врагов
     {
-        for(Enemy& enemy : world.enemies)
+        for(Enemy* enemy : world.enemies)
         {
-            if(!enemy.bDead)
+            if(!enemy->bDead)
             {
-                enemy.enemyRect.left += enemy.enemyVelocity.x * clockDeltaSeconds;
-                CollisionResult collisionResult = HandleCollision(enemy.enemyRect, enemy.enemyVelocity, world.level, EOrientaion::Horizontal, tileSize);
+                enemy->rect.left += enemy->enemyVelocity.x * clockDeltaSeconds;
+                CollisionResult collisionResult = HandleCollision(enemy->rect, enemy->enemyVelocity, world.level, EOrientaion::Horizontal, tileSize);
                 if(collisionResult.bIsCollided)
                 {
-                    enemy.enemyRect.left = collisionResult.newPosition.x;
-                    enemy.enemyVelocity.x *= -1;
+                    enemy->rect.left = collisionResult.newPosition.x;
+                    enemy->enemyVelocity.x *= -1;
                 }
             }
         }
@@ -64,20 +66,20 @@ void UpdateGame(World& world, float clockDeltaSeconds, const sf::Vector2f& tileS
         player.playerVelocity.y += world.gravity * clockDeltaSeconds;
 
         {
-            player.staticObj.rect.left += player.playerVelocity.x * clockDeltaSeconds;
-            CollisionResult collisionResult = HandleCollision(player.staticObj.rect, player.playerVelocity, world.level, EOrientaion::Horizontal, tileSize);
+            player.rect.left += player.playerVelocity.x * clockDeltaSeconds;
+            CollisionResult collisionResult = HandleCollision(player.rect, player.playerVelocity, world.level, EOrientaion::Horizontal, tileSize);
             if(collisionResult.bIsCollided)
             {
-                player.staticObj.rect.left = collisionResult.newPosition.x;
+                player.rect.left = collisionResult.newPosition.x;
             }
         }
             
         {
-            player.staticObj.rect.top -= player.playerVelocity.y * clockDeltaSeconds;
-            CollisionResult collisionResult = HandleCollision(player.staticObj.rect, player.playerVelocity, world.level, EOrientaion::Vertical, tileSize);
+            player.rect.top -= player.playerVelocity.y * clockDeltaSeconds;
+            CollisionResult collisionResult = HandleCollision(player.rect, player.playerVelocity, world.level, EOrientaion::Vertical, tileSize);
             if(collisionResult.bIsCollided)
             {
-                player.staticObj.rect.top = collisionResult.newPosition.y;
+                player.rect.top = collisionResult.newPosition.y;
                 
                 if(world.player.playerVelocity.y < 0)
                 {
@@ -85,6 +87,19 @@ void UpdateGame(World& world, float clockDeltaSeconds, const sf::Vector2f& tileS
                 }
                 player.playerVelocity.y = 0.f;
             }
+        }
+
+        {
+            if(world.renderWindow != nullptr)
+            {
+                world.camera.position.x = player.rect.getPosition().x;
+                world.camera.position.x -= world.renderWindow->getSize().x / 2 - player.rect.width / 2.f;
+
+                const float minCameraX = 0.f;
+                const float maxCameraX = world.level.tiles[0].size() * tileSize.x - world.renderWindow->getSize().x;
+                world.camera.position.x = std::clamp(world.camera.position.x, minCameraX, maxCameraX);
+            }
+            
         }
 
         if(std::abs(player.playerVelocity.x) > 0.0001f)
@@ -118,18 +133,18 @@ void UpdateGame(World& world, float clockDeltaSeconds, const sf::Vector2f& tileS
 
         player.currentAnimation->Update(clockDeltaSeconds);
         
-        for(Enemy& enemy : world.enemies)
+        for(Enemy* enemy : world.enemies)
         {
-            if(!enemy.bDead)
+            if(!enemy->bDead)
             {
                 // Проверяем столкновение игрока с врагом
-                if(world.player.staticObj.rect.intersects(enemy.enemyRect))
+                if(world.player.rect.intersects(enemy->rect))
                 {
                     // Если игрок находится выше врага и скорость игрока направлена вниз, т.е. игрок прыгнул сверху вниз на врага
                     // Враг умираем, а игрок немного подпрыгивает вверх
-                    if(!player.bIsPlayerOnGround && player.staticObj.rect.top < enemy.enemyRect.top && cachedPlayerVelocity.y < 0 )
+                    if(!player.bIsPlayerOnGround && player.rect.top < enemy->rect.top && cachedPlayerVelocity.y < 0 )
                     {
-                        enemy.bDead = true;
+                        enemy->bDead = true;
                         player.playerVelocity.y = player.playerKillEnemyJumpSpeed;
                         player.score += 50;
                     }
@@ -144,14 +159,14 @@ void UpdateGame(World& world, float clockDeltaSeconds, const sf::Vector2f& tileS
         }
 
         
-        for(Coin& coin : world.coins)
+        for(Coin* coin : world.coins)
         {
-            if(!coin.bDead)
+            if(!coin->bDead)
             {
                 // Проверяем столкновение игрока с монетой
-                if(world.player.staticObj.rect.intersects(coin.coinRect))
+                if(world.player.rect.intersects(coin->rect))
                 {
-                    coin.bDead = true;
+                    coin->bDead = true;
                     player.score += 100;
                 }
             }
@@ -174,29 +189,23 @@ void DrawGame(sf::RenderWindow& window, World& world, const sf::Vector2f& tileSi
         {
             const Tile& tile = world.level.tiles[i][j];
 
+            sf::Vector2f tileDrawPosition = {tileSize.x * j, tileSize.y * i};
+            tileDrawPosition -= world.camera.position;
+
             sf::Sprite& sprite = world.level.tileTextureTypeToSprite[tile.textureType];
-            sprite.setPosition(tileSize.x * j, tileSize.y * i);
+            sprite.setPosition(tileDrawPosition);
             window.draw(sprite);
         }
     }
-
-    // Отрисовываем врагов
-    for(Enemy& enemy : world.enemies)
-    {
-        if(!enemy.bDead)
-        {
-            enemy.enemySprite.setPosition(enemy.enemyRect.left, enemy.enemyRect.top);
-            window.draw(enemy.enemySprite);
-        }
-    }
     
-    // Отрисовываем монеты
-    for(Coin& coin : world.coins)
+    for(GameObjectLiving* object : world.objects)
     {
-        if(!coin.bDead)
+        if(!object->bDead)
         {
-            coin.coinSprite.setPosition(coin.coinRect.left, coin.coinRect.top);
-            window.draw(coin.coinSprite);
+            sf::Vector2f drawPosition = object->rect.getPosition();
+            drawPosition -= world.camera.position;
+            object->sprite.setPosition(drawPosition);
+            window.draw(object->sprite);
         }
     }
 
@@ -208,22 +217,23 @@ void DrawGame(sf::RenderWindow& window, World& world, const sf::Vector2f& tileSi
         // Берём текущий кадр анимации и устанавливаем его на спрайт игрока
         if(player.currentAnimation != nullptr)
         {
-            player.staticObj.sprite.setTextureRect(player.currentAnimation->GetCurrentFrame());
+            player.sprite.setTextureRect(player.currentAnimation->GetCurrentFrame());
         }
 
         // Изменяем scale спрайта игрока в зависимости от направления движения
         // Изменение scale приведет к изменению направления спрайта
         const int scaleXSign = player.playerAnimationDirection == EPlayerDirection::Left ? -1.f : 1.f;
-        const float scaleX = std::abs(player.staticObj.sprite.getScale().x) * scaleXSign;
-        player.staticObj.sprite.setScale(scaleX, player.staticObj.sprite.getScale().y);
-
-        const float playerDrawLeftPos = player.staticObj.rect.left + world.player.staticObj.rect.width / 2;
-        const float playerDrawTopPos = player.staticObj.rect.top + world.player.staticObj.rect.height / 2;
-        player.staticObj.sprite.setPosition(playerDrawLeftPos, playerDrawTopPos);
+        const float scaleX = std::abs(player.sprite.getScale().x) * scaleXSign;
+        player.sprite.setScale(scaleX, player.sprite.getScale().y);
+        
+        sf::Vector2f drawPosition ={player.rect.left + world.player.rect.width / 2, player.rect.top + world.player.rect.height / 2};
+        drawPosition -= world.camera.position;
+        
+        player.sprite.setPosition(drawPosition);
     }
   
     
-    window.draw(world.player.staticObj.sprite);
+    window.draw(world.player.sprite);
 
     // Отрисовка текста с количеством очков
     world.scoreText.setString("SCORE: " + std::to_string(world.player.score));

@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "Animation.h"
-#include "StaticObject.h"
+#include "GameObject.h"
 #include "SFML/Graphics.hpp"
 
 enum class EPlayerDirection
@@ -10,10 +10,9 @@ enum class EPlayerDirection
     Right
 };
 
-struct Player
+class Player : public GameObjectLiving
 {
-    StaticObject staticObj;
-
+public:
     // Текущее ускорение игрока. Показывает в какую сторону и на сколько быстро двигается игрок
     sf::Vector2f playerVelocity;
     

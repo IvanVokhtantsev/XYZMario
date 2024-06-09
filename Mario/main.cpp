@@ -1,7 +1,8 @@
 #include "GameLogic.h"
 
+
 int main()
-{
+{   
     // Размер тайла внутри текстуры
     const sf::Vector2i textureTileSize(16.f, 16.f);
     
@@ -11,7 +12,7 @@ int main()
     const sf::Vector2f tileSize(textureTileSize.x * drawScale.x, textureTileSize.y * drawScale.y);
     
     // Создание основного игрового окна. С размером 800*600
-    sf::RenderWindow window(sf::VideoMode(800 , 600), "Mario");
+    sf::RenderWindow window(sf::VideoMode(1200 , 600), "Mario");
     
     // Текстура с тайлсетом
     sf::Texture tileSetTexture;
@@ -21,18 +22,18 @@ int main()
     LevelDescriptor levelDescriptor;
     levelDescriptor.levelSymbols =
         {
-        /* 0*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'}, // level[0]. Чтобы получить 3 нужно level[0][1]
-        /* 1*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},  // level[1]. Чтобы получить 4 нужно level[1][2]
-        /* 2*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},
-        /* 3*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},
-        /* 4*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},
-        /* 5*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},
-        /* 6*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},
-        /* 7*/{'B', 'S', 'S', 'S', 'B', 'B', 'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},
-        /* 8*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},
-        /* 9*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},
-        /*10*/{'B', 'S', 'S', 'B', 'S', 'S', 'S', 'S', 'B', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},
-        /*11*/{'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'}
+        /* 0*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'}, // level[0]. Чтобы получить 3 нужно level[0][1]
+        /* 1*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},  // level[1]. Чтобы получить 4 нужно level[1][2]
+        /* 2*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},
+        /* 3*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},
+        /* 4*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},
+        /* 5*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},
+        /* 6*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},
+        /* 7*/{'B', 'S', 'S', 'S', 'B', 'B', 'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},
+        /* 8*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},
+        /* 9*/{'B', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'B', 'S', 'S', 'S', 'S', 'S', 'S', 'B'},
+        /*10*/{'B', 'S', 'S', 'B', 'S', 'S', 'S', 'S', 'B', 'S', 'S', 'S', 'S', 'B', 'B', 'S', 'B', 'S', 'S', 'S', 'S', 'B', 'B', 'S', 'S', 'S', 'B', 'S', 'S', 'B'},
+        /*11*/{'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'}
         };
     levelDescriptor.tileSetTexture = tileSetTexture;
     
@@ -47,6 +48,8 @@ int main()
     {
         World world;
 
+        world.renderWindow = &window;
+        
         world.scoreText.setFont(font);
         world.scoreText.setCharacterSize(18);
         world.scoreText.setPosition(50.f,50.f);
@@ -57,16 +60,16 @@ int main()
 
         {
             // Загружаем текстуру в спрайт
-            world.player.staticObj.sprite.setTexture(tileSetTexture);
+            world.player.sprite.setTexture(tileSetTexture);
             // Указываем какую часть текстуры будет использовать спрайт
-            world.player.staticObj.sprite.setTextureRect(sf::IntRect(117, 507, textureTileSize.x, textureTileSize.y));
+            world.player.sprite.setTextureRect(sf::IntRect(117, 507, textureTileSize.x, textureTileSize.y));
             // Задаём скейл спрайту чтобы его увеличить
-            world.player.staticObj.sprite.setScale(drawScale);
+            world.player.sprite.setScale(drawScale);
 
-            world.player.staticObj.sprite.setOrigin(textureTileSize.x / 2.f, textureTileSize.y / 2.f);
+            world.player.sprite.setOrigin(textureTileSize.x / 2.f, textureTileSize.y / 2.f);
 
             // Создание переменной для хранения размера и положения игрока
-            world.player.staticObj.rect = sf::FloatRect(80.f, 450.f, textureTileSize.x * drawScale.x, textureTileSize.y * drawScale.y);
+            world.player.rect = sf::FloatRect(80.f, 450.f, textureTileSize.x * drawScale.x, textureTileSize.y * drawScale.y);
 
             // Анимация бега
             {
@@ -95,65 +98,70 @@ int main()
                 world.player.jumpDownAnimation.frames.push_back(sf::IntRect(90, 528, textureTileSize.x, textureTileSize.y));
                 world.player.jumpDownAnimation.frames.push_back(sf::IntRect(113, 528, textureTileSize.x, textureTileSize.y));
             }
+            //world.objects.push_back(&world.player);
         }
         
         {
-            Enemy enemy;
+            Enemy* enemy = new Enemy;
             //...
 
-            enemy.enemySprite.setTexture(tileSetTexture);
-            enemy.enemySprite.setTextureRect(sf::IntRect(187, 894, textureTileSize.x, textureTileSize.y));
-            enemy.enemySprite.setScale(drawScale);
+            enemy->sprite.setTexture(tileSetTexture);
+            enemy->sprite.setTextureRect(sf::IntRect(187, 894, textureTileSize.x, textureTileSize.y));
+            enemy->sprite.setScale(drawScale);
 
-            enemy.enemyRect= sf::FloatRect(350.f, 480.f, textureTileSize.x * drawScale.x, textureTileSize.y * drawScale.y);
+            enemy->rect = sf::FloatRect(350.f, 480.f, textureTileSize.x * drawScale.x, textureTileSize.y * drawScale.y);
 
-            enemy.enemySpeed = 150.f;
-            enemy.enemyVelocity.x = -enemy.enemySpeed;
+            enemy->enemySpeed = 150.f;
+            enemy->enemyVelocity.x = -enemy->enemySpeed;
 
             world.enemies.push_back(enemy);
+            world.objects.push_back(enemy);
         }
         {
-            Enemy enemy;
+            Enemy* enemy = new Enemy;
             //...
 
-            enemy.enemySprite.setTexture(tileSetTexture);
-            enemy.enemySprite.setTextureRect(sf::IntRect(187, 894, textureTileSize.x, textureTileSize.y));
-            enemy.enemySprite.setScale(drawScale);
+            enemy->sprite.setTexture(tileSetTexture);
+            enemy->sprite.setTextureRect(sf::IntRect(187, 894, textureTileSize.x, textureTileSize.y));
+            enemy->sprite.setScale(drawScale);
 
-            enemy.enemyRect= sf::FloatRect(250.f, 480.f, textureTileSize.x * drawScale.x, textureTileSize.y * drawScale.y);
+            enemy->rect= sf::FloatRect(250.f, 480.f, textureTileSize.x * drawScale.x, textureTileSize.y * drawScale.y);
 
-            enemy.enemySpeed = 150.f;
-            enemy.enemyVelocity.x = -enemy.enemySpeed;
+            enemy->enemySpeed = 150.f;
+            enemy->enemyVelocity.x = -enemy->enemySpeed;
 
             world.enemies.push_back(enemy);
+            world.objects.push_back(enemy);
         }
 
         {
-            Coin coin;
+            Coin* coin = new Coin;
 
             const sf::Vector2i coinTexturesSize(10, 14);
 
-            coin.coinSprite.setTexture(tileSetTexture);
-            coin.coinSprite.setTextureRect(sf::IntRect(427, 163, coinTexturesSize.x, coinTexturesSize.y));
-            coin.coinSprite.setScale(drawScale);
+            coin->sprite.setTexture(tileSetTexture);
+            coin->sprite.setTextureRect(sf::IntRect(427, 163, coinTexturesSize.x, coinTexturesSize.y));
+            coin->sprite.setScale(drawScale);
 
-            coin.coinRect = sf::FloatRect(288.f, 288.f, coinTexturesSize.x * drawScale.x, coinTexturesSize.y * drawScale.y);
+            coin->rect = sf::FloatRect(288.f, 288.f, coinTexturesSize.x * drawScale.x, coinTexturesSize.y * drawScale.y);
 
             world.coins.push_back(coin);
+            world.objects.push_back(coin);
         }
 
         {
-            Coin coin;
+            Coin* coin = new Coin;
 
             const sf::Vector2i coinTexturesSize(10, 14);
 
-            coin.coinSprite.setTexture(tileSetTexture);
-            coin.coinSprite.setTextureRect(sf::IntRect(427, 163, coinTexturesSize.x, coinTexturesSize.y));
-            coin.coinSprite.setScale(drawScale);
+            coin->sprite.setTexture(tileSetTexture);
+            coin->sprite.setTextureRect(sf::IntRect(427, 163, coinTexturesSize.x, coinTexturesSize.y));
+            coin->sprite.setScale(drawScale);
 
-            coin.coinRect = sf::FloatRect(350.f, 480.f, coinTexturesSize.x * drawScale.x, coinTexturesSize.y * drawScale.y);
+            coin->rect = sf::FloatRect(350.f, 480.f, coinTexturesSize.x * drawScale.x, coinTexturesSize.y * drawScale.y);
 
             world.coins.push_back(coin);
+            world.objects.push_back(coin);
         }
     
         // Используется для подсчета времени обработки игрового цикла

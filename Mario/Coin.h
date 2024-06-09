@@ -1,19 +1,12 @@
 ﻿#pragma once
 
+#include "GameObject.h"
 #include "SFML/Graphics.hpp"
 
-struct Coin
+/*
+ * Дочерний класс для монеты
+ */
+class Coin : public GameObjectLiving
 {
-    // Спрайт монеты. Спрайт это часть текстуры с указанием координат в текстуре
-    // Спрайт не принимает участие в расчете игровой логики. Он нужен только для отрисовки
-    sf::Sprite coinSprite;
-    
-    // Создание переменной для хранения размера и положения монеты
-    sf::FloatRect coinRect;
-    
-    // Собрана ли монета
-    bool bDead = false;
+public:
 };
-
-
-
