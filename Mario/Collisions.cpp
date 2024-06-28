@@ -25,7 +25,7 @@ CollisionResult HandleCollision(
         for(int j = xLeftTile; j <= xRightTile; ++j)
         {
             // Тайл с которым сейчас обрабатываем коллизию
-            const Tile& tile = level.tiles[i][j];
+            const Tile& tile = *level.tiles[i][j];
             const sf::Vector2f tilePosition = sf::Vector2f(j * tileSize.x, i * tileSize.y);
             
             if(tile.collisionType == ETileCollisionType::Collision)

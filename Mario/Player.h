@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "Animation.h"
-#include "GameObject.h"
+#include "GameObjectLiving.h"
 #include "SFML/Graphics.hpp"
 
 enum class EPlayerDirection
@@ -12,6 +12,9 @@ enum class EPlayerDirection
 
 class Player : public GameObjectLiving
 {
+public:
+    void draw(sf::RenderWindow& window) override;
+    
 public:
     // Текущее ускорение игрока. Показывает в какую сторону и на сколько быстро двигается игрок
     sf::Vector2f playerVelocity;

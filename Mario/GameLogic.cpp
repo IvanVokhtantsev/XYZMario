@@ -60,8 +60,8 @@ void UpdateGame(World& world, float clockDeltaSeconds, const sf::Vector2f& tileS
         // На игрока постоянно оказывает влияние гравитация и тянет его вниз
         // Во время прыжка она будет всегда замедлять прыжок пока игрок не начнет двигаться вниз
 
-        const sf::Vector2f cachedPlayerVelocity = world.player.playerVelocity;
-        Player& player = world.player;
+        const sf::Vector2f cachedPlayerVelocity = world.player->playerVelocity;
+        Player& player = *world.player;
         
         player.playerVelocity.y += world.gravity * clockDeltaSeconds;
 
@@ -81,7 +81,7 @@ void UpdateGame(World& world, float clockDeltaSeconds, const sf::Vector2f& tileS
             {
                 player.rect.top = collisionResult.newPosition.y;
                 
-                if(world.player.playerVelocity.y < 0)
+                if(world.player->playerVelocity.y < 0)
                 {
                     player.bIsPlayerOnGround = true;
                 }
@@ -138,7 +138,7 @@ void UpdateGame(World& world, float clockDeltaSeconds, const sf::Vector2f& tileS
             if(!enemy->bDead)
             {
                 // Проверяем столкновение игрока с врагом
-                if(world.player.rect.intersects(enemy->rect))
+                if(world.player->rect.intersects(enemy->rect))
                 {
                     // Если игрок находится выше врага и скорость игрока направлена вниз, т.е. игрок прыгнул сверху вниз на врага
                     // Враг умираем, а игрок немного подпрыгивает вверх
@@ -164,7 +164,7 @@ void UpdateGame(World& world, float clockDeltaSeconds, const sf::Vector2f& tileS
             if(!coin->bDead)
             {
                 // Проверяем столкновение игрока с монетой
-                if(world.player.rect.intersects(coin->rect))
+                if(world.player->rect.intersects(coin->rect))
                 {
                     coin->bDead = true;
                     player.score += 100;
@@ -176,67 +176,15 @@ void UpdateGame(World& world, float clockDeltaSeconds, const sf::Vector2f& tileS
 
 void DrawGame(sf::RenderWindow& window, World& world, const sf::Vector2f& tileSize)
 {
-    // Блок отрисовки окна
-    
     // Очищаем окно от предыдущих изображений
     window.clear();
-
-    // Отрисовываем новые данные в окне,
-            
-    for(int i = 0; i < world.level.tiles.size(); ++i)
-    {
-        for(int j = 0; j < world.level.tiles[i].size(); ++j)
-        {
-            const Tile& tile = world.level.tiles[i][j];
-
-            sf::Vector2f tileDrawPosition = {tileSize.x * j, tileSize.y * i};
-            tileDrawPosition -= world.camera.position;
-
-            sf::Sprite& sprite = world.level.tileTextureTypeToSprite[tile.textureType];
-            sprite.setPosition(tileDrawPosition);
-            window.draw(sprite);
-        }
-    }
     
-    for(GameObjectLiving* object : world.objects)
+    for(GameObject* object : world.objects)
     {
-        if(!object->bDead)
-        {
-            sf::Vector2f drawPosition = object->rect.getPosition();
-            drawPosition -= world.camera.position;
-            object->sprite.setPosition(drawPosition);
-            window.draw(object->sprite);
-        }
+         object->draw(window);
     }
-
-    {
-        // Отрисовываем игрока
-        
-        Player& player = world.player;
-      
-        // Берём текущий кадр анимации и устанавливаем его на спрайт игрока
-        if(player.currentAnimation != nullptr)
-        {
-            player.sprite.setTextureRect(player.currentAnimation->GetCurrentFrame());
-        }
-
-        // Изменяем scale спрайта игрока в зависимости от направления движения
-        // Изменение scale приведет к изменению направления спрайта
-        const int scaleXSign = player.playerAnimationDirection == EPlayerDirection::Left ? -1.f : 1.f;
-        const float scaleX = std::abs(player.sprite.getScale().x) * scaleXSign;
-        player.sprite.setScale(scaleX, player.sprite.getScale().y);
-        
-        sf::Vector2f drawPosition ={player.rect.left + world.player.rect.width / 2, player.rect.top + world.player.rect.height / 2};
-        drawPosition -= world.camera.position;
-        
-        player.sprite.setPosition(drawPosition);
-    }
-  
-    
-    window.draw(world.player.sprite);
-
     // Отрисовка текста с количеством очков
-    world.scoreText.setString("SCORE: " + std::to_string(world.player.score));
+    world.scoreText.setString("SCORE: " + std::to_string(world.player->score));
     window.draw(world.scoreText);
     
     // Выводим отрисованное на экран

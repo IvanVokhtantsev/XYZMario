@@ -1,8 +1,24 @@
 ﻿#include "Level.h"
 
-Level CreateLevel(const LevelDescriptor& levelDescriptor, sf::Vector2f tileScale)
+#include "World.h"
+
+void Tile::draw(sf::RenderWindow& window)
+{
+    Level& level = world->level;
+    sf::Vector2f tileSize = level.tileSize;
+    
+    sf::Vector2f tileDrawPosition = {tileSize.x * tilePosition.x, tileSize.y * tilePosition.y};
+    tileDrawPosition -= world->camera.position;
+
+    sf::Sprite& sprite = level.tileTextureTypeToSprite[textureType];
+    sprite.setPosition(tileDrawPosition);
+    window.draw(sprite);
+}
+
+Level CreateLevel(World& world, const LevelDescriptor& levelDescriptor, sf::Vector2f tileScale, sf::Vector2f tileSize)
 {
     Level level;
+    level.tileSize = tileSize;
     
     for(int i = 0; i < levelDescriptor.levelSymbols.size(); ++i)
     {
@@ -11,19 +27,24 @@ Level CreateLevel(const LevelDescriptor& levelDescriptor, sf::Vector2f tileScale
         level.tiles.push_back({});
         for(int j = 0; j < levelDescriptor.levelSymbols[i].size(); ++j)
         {
-            Tile tile;
+            Tile* tile = new Tile;
+            tile->world = &world;
+            tile->tilePosition.x  = j;
+            tile->tilePosition.y = i;
+            
             // В зависимости от символа инициализируем тайл
             if(levelDescriptor.levelSymbols[i][j] == 'B')
             {
-                tile.textureType = ETileTextureType::Ground;
-                tile.collisionType = ETileCollisionType::Collision;
+                tile->textureType = ETileTextureType::Ground;
+                tile->collisionType = ETileCollisionType::Collision;
             }
             else if(levelDescriptor.levelSymbols[i][j] == 'S')
             {
-                tile.textureType = ETileTextureType::Empty;
-                tile.collisionType = ETileCollisionType::NoCollision;
+                tile->textureType = ETileTextureType::Empty;
+                tile->collisionType = ETileCollisionType::NoCollision;
             }
 
+            world.objects.push_back(tile);
             // Добавляем тайл в карту
             level.tiles[i].push_back(tile);
         }

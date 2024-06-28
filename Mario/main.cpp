@@ -56,113 +56,60 @@ int main()
         world.scoreText.setFillColor(sf::Color::White);
         world.scoreText.setStyle(sf::Text::Style::Bold);
     
-        world.level = CreateLevel(levelDescriptor, drawScale);
+        world.level = CreateLevel(world, levelDescriptor, drawScale, tileSize);
 
         {
+            world.player = new Player;
+            world.player->world = &world;
+            world.objects.push_back(world.player);
+            
             // Загружаем текстуру в спрайт
-            world.player.sprite.setTexture(tileSetTexture);
+            world.player->sprite.setTexture(tileSetTexture);
             // Указываем какую часть текстуры будет использовать спрайт
-            world.player.sprite.setTextureRect(sf::IntRect(117, 507, textureTileSize.x, textureTileSize.y));
+            world.player->sprite.setTextureRect(sf::IntRect(117, 507, textureTileSize.x, textureTileSize.y));
             // Задаём скейл спрайту чтобы его увеличить
-            world.player.sprite.setScale(drawScale);
+            world.player->sprite.setScale(drawScale);
 
-            world.player.sprite.setOrigin(textureTileSize.x / 2.f, textureTileSize.y / 2.f);
+            world.player->sprite.setOrigin(textureTileSize.x / 2.f, textureTileSize.y / 2.f);
 
             // Создание переменной для хранения размера и положения игрока
-            world.player.rect = sf::FloatRect(80.f, 450.f, textureTileSize.x * drawScale.x, textureTileSize.y * drawScale.y);
+            world.player->rect = sf::FloatRect(80.f, 450.f, textureTileSize.x * drawScale.x, textureTileSize.y * drawScale.y);
 
             // Анимация бега
             {
-                world.player.walkAnimation.texture = tileSetTexture;
-                world.player.walkAnimation.speed = 7.f;
-                world.player.walkAnimation.frames.push_back(sf::IntRect(84, 507, textureTileSize.x, textureTileSize.y));
-                world.player.walkAnimation.frames.push_back(sf::IntRect(99, 507, textureTileSize.x, textureTileSize.y));
-                world.player.walkAnimation.frames.push_back(sf::IntRect(117, 507, textureTileSize.x, textureTileSize.y));
+                world.player->walkAnimation.texture = tileSetTexture;
+                world.player->walkAnimation.speed = 7.f;
+                world.player->walkAnimation.frames.push_back(sf::IntRect(84, 507, textureTileSize.x, textureTileSize.y));
+                world.player->walkAnimation.frames.push_back(sf::IntRect(99, 507, textureTileSize.x, textureTileSize.y));
+                world.player->walkAnimation.frames.push_back(sf::IntRect(117, 507, textureTileSize.x, textureTileSize.y));
             }
 
             {
-                world.player.idleAnimation.texture = tileSetTexture;
-                world.player.idleAnimation.speed = 0.f;
-                world.player.idleAnimation.frames.push_back(sf::IntRect(23, 507, textureTileSize.x, textureTileSize.y));
+                world.player->idleAnimation.texture = tileSetTexture;
+                world.player->idleAnimation.speed = 0.f;
+                world.player->idleAnimation.frames.push_back(sf::IntRect(23, 507, textureTileSize.x, textureTileSize.y));
             }
 
             {
-                world.player.jumpUpAnimation.texture = tileSetTexture;
-                world.player.jumpUpAnimation.speed = 0.f;
-                world.player.jumpUpAnimation.frames.push_back(sf::IntRect(139, 507, textureTileSize.x, textureTileSize.y));
+                world.player->jumpUpAnimation.texture = tileSetTexture;
+                world.player->jumpUpAnimation.speed = 0.f;
+                world.player->jumpUpAnimation.frames.push_back(sf::IntRect(139, 507, textureTileSize.x, textureTileSize.y));
             }
             {
-                world.player.jumpDownAnimation.texture = tileSetTexture;
-                world.player.jumpDownAnimation.speed = 7.f;
-                world.player.jumpDownAnimation.frames.push_back(sf::IntRect(68, 528, textureTileSize.x, textureTileSize.y));
-                world.player.jumpDownAnimation.frames.push_back(sf::IntRect(90, 528, textureTileSize.x, textureTileSize.y));
-                world.player.jumpDownAnimation.frames.push_back(sf::IntRect(113, 528, textureTileSize.x, textureTileSize.y));
+                world.player->jumpDownAnimation.texture = tileSetTexture;
+                world.player->jumpDownAnimation.speed = 7.f;
+                world.player->jumpDownAnimation.frames.push_back(sf::IntRect(68, 528, textureTileSize.x, textureTileSize.y));
+                world.player->jumpDownAnimation.frames.push_back(sf::IntRect(90, 528, textureTileSize.x, textureTileSize.y));
+                world.player->jumpDownAnimation.frames.push_back(sf::IntRect(113, 528, textureTileSize.x, textureTileSize.y));
             }
-            //world.objects.push_back(&world.player);
         }
         
-        {
-            Enemy* enemy = new Enemy;
-            //...
+        spawnEnemyInWorld(world, tileSetTexture, drawScale, sf::Vector2f(250.f, 480.f));
+        spawnEnemyInWorld(world, tileSetTexture, drawScale, sf::Vector2f(350.f, 480.f));
 
-            enemy->sprite.setTexture(tileSetTexture);
-            enemy->sprite.setTextureRect(sf::IntRect(187, 894, textureTileSize.x, textureTileSize.y));
-            enemy->sprite.setScale(drawScale);
-
-            enemy->rect = sf::FloatRect(350.f, 480.f, textureTileSize.x * drawScale.x, textureTileSize.y * drawScale.y);
-
-            enemy->enemySpeed = 150.f;
-            enemy->enemyVelocity.x = -enemy->enemySpeed;
-
-            world.enemies.push_back(enemy);
-            world.objects.push_back(enemy);
-        }
-        {
-            Enemy* enemy = new Enemy;
-            //...
-
-            enemy->sprite.setTexture(tileSetTexture);
-            enemy->sprite.setTextureRect(sf::IntRect(187, 894, textureTileSize.x, textureTileSize.y));
-            enemy->sprite.setScale(drawScale);
-
-            enemy->rect= sf::FloatRect(250.f, 480.f, textureTileSize.x * drawScale.x, textureTileSize.y * drawScale.y);
-
-            enemy->enemySpeed = 150.f;
-            enemy->enemyVelocity.x = -enemy->enemySpeed;
-
-            world.enemies.push_back(enemy);
-            world.objects.push_back(enemy);
-        }
-
-        {
-            Coin* coin = new Coin;
-
-            const sf::Vector2i coinTexturesSize(10, 14);
-
-            coin->sprite.setTexture(tileSetTexture);
-            coin->sprite.setTextureRect(sf::IntRect(427, 163, coinTexturesSize.x, coinTexturesSize.y));
-            coin->sprite.setScale(drawScale);
-
-            coin->rect = sf::FloatRect(288.f, 288.f, coinTexturesSize.x * drawScale.x, coinTexturesSize.y * drawScale.y);
-
-            world.coins.push_back(coin);
-            world.objects.push_back(coin);
-        }
-
-        {
-            Coin* coin = new Coin;
-
-            const sf::Vector2i coinTexturesSize(10, 14);
-
-            coin->sprite.setTexture(tileSetTexture);
-            coin->sprite.setTextureRect(sf::IntRect(427, 163, coinTexturesSize.x, coinTexturesSize.y));
-            coin->sprite.setScale(drawScale);
-
-            coin->rect = sf::FloatRect(350.f, 480.f, coinTexturesSize.x * drawScale.x, coinTexturesSize.y * drawScale.y);
-
-            world.coins.push_back(coin);
-            world.objects.push_back(coin);
-        }
+        spawnCoinInWorld(world, tileSetTexture, drawScale, sf::Vector2f(288.f, 288.f));
+        spawnCoinInWorld(world, tileSetTexture, drawScale, sf::Vector2f(350.f, 480.f));
+   
     
         // Используется для подсчета времени обработки игрового цикла
         sf::Clock clock;
@@ -188,10 +135,10 @@ int main()
                 {
                     window.close();
                 }
-                HandleWindowsEvent(event,  world.player);
+                HandleWindowsEvent(event, *world.player);
             }
 
-            HandleInput( world.player);
+            HandleInput( *world.player);
 
             UpdateGame(world, clockDeltaSeconds, tileSize);
 

@@ -8,10 +8,10 @@
 
 struct World
 {
-    Player player;
+    Player* player;
     std::vector<Enemy*> enemies;
     std::vector<Coin*> coins;
-    std::vector<GameObjectLiving*> objects;
+    std::vector<GameObject*> objects;
     Level level;
 
     Camera camera;

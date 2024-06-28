@@ -3,6 +3,17 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 
+namespace sf
+{
+    class RenderWindow;
+}
+
+/* Это forward declaration
+ * Она нужна чтобы избежать циклической зависимости между GameObject и World.
+ * Циклическая зависимость это когда GameObject выполняет include World и World выполняет include GameObject
+ */
+class World;
+
 /*
  * В чем отличие структуры от класса?
  * У структуры все члены по умолчанию public, у класса все члены по умолчанию private
@@ -15,25 +26,22 @@
  */
 class GameObject
 {
+public:
+    // Объявляем виртуальную функцию для того чтобы иметь возможность переопределить её в дочерних классах
+    virtual void draw(sf::RenderWindow& window)
+    {
+        
+    }
     // В области видимости public все члены класса доступны внешним сущностям
 public:
     // Положение и размер объекта в игровом мире
     sf::FloatRect rect;
 
+    World* world = nullptr;
+
     // В области видимости protected все члены класса доступны самому классу и тем классам которые от него наследуются
 protected:
-
+    
     // В области видимости protected все члены класса доступны только самому классу 
 private:
-};
-
-class GameObjectLiving : public GameObject
-{
-public:
-    // Спрайт это часть текстуры с указанием координат в текстуре
-    // Спрайт не принимает участие в расчете игровой логики. Он нужен только для отрисовки
-    sf::Sprite sprite;
-
-    // Мёртв ли объект
-    bool bDead = false;
 };
